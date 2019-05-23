@@ -5,7 +5,10 @@
 # ESModule imports (and TypeScript imports) can be absolute starting with the workspace name.
 # The name of the workspace should match the npm package where we publish, so that these
 # imports also make sense when referencing the published package.
-workspace(name = "angular_bazel_example")
+workspace(
+    name = "angular_bazel_example",
+    managed_directories = {"@npm": ["node_modules"]},
+)
 
 # These rules are built-into Bazel but we need to load them first to download more rules
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
@@ -14,8 +17,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "1db950bbd27fb2581866e307c0130983471d4c3cd49c46063a2503ca7b6770a4",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.29.0/rules_nodejs-0.29.0.tar.gz"],
+    sha256 = "d44aa13db972a773e2168448a2a5e1762ca474a76a32330442430a197df24405",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.30.0/rules_nodejs-0.30.0.tar.gz"],
 )
 
 # Fetch sass rules for compiling sass files
@@ -40,16 +43,12 @@ Try running `yarn bazel` instead.
     (If you did run that, check that you've got a fresh `yarn install`)
 
 """,
-    minimum_bazel_version = "0.21.0",
+    minimum_bazel_version = "0.26.0",
 )
 
 # Setup the Node.js toolchain & install our npm dependencies into @npm
 yarn_install(
     name = "npm",
-    data = [
-        # Needed because this tsconfig file is used in the "postinstall" script.
-        "//:angular-metadata.tsconfig.json",
-    ],
     package_json = "//:package.json",
     yarn_lock = "//:yarn.lock",
 )
